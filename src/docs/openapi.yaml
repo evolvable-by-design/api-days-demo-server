@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 1.0.0
+  version: 2.0.0
   title: APIDays Demo
   license:
     name: MIT
@@ -11,7 +11,7 @@ info:
 servers:
   - url: http://localhost:8080/
 paths:
-  /talk:
+  /talks:
     post:
       summary: Creates a new talk
       operationId: createTalk
@@ -38,10 +38,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/TalkDetails'
           links:
+            attend:
+              x-@relation: api_days_vocab:AttendAction
+              operationId: attendToTalk
             delete:
               x-@relation: api_days_vocab:DeleteAction
               operationId: deleteTalk
-  /talk/{name}:
+  /talks/{name}:
     parameters: 
       - $ref: '#/components/parameters/projectName'
     delete:
@@ -50,6 +53,23 @@ paths:
       x-@id: api_days_vocab:deleteTalk
       tags:
         - Talk
+      responses:
+        '204':
+          description: Success
+  /talks/{name}/attend:
+    parameters: 
+      - $ref: '#/components/parameters/projectName'
+    post:
+      summary: Attend to a new talk
+      operationId: attendToTalk
+      x-@id: api_days_vocab:AttendToTalk
+      tags:
+        - Talk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendToTalkRequest'
       responses:
         '204':
           description: Success
@@ -80,6 +100,18 @@ components:
         startTime:
           type: string
           format: datetime
+        category:
+          type: string
+          enum: [ 'API Design', 'API Maintenance', 'API Management' ]
+    AttendToTalkRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          x-@id: schema:email
+          format: email
     TalkDetails:
       type: object
       properties:
@@ -93,6 +125,9 @@ components:
         startTime:
           type: string
           format: datetime
+        category:
+          type: string
+          enum: [ 'API Design', 'API Maintenance', 'API Management' ]
 # json-LD context
 x-@context:
   x-@context: '@context'
@@ -102,7 +137,9 @@ x-@context:
   schema: 'https://schema.org/'
   api_days_vocab: 'https://example.com/api_days_vocab#'
   email: schema:email
+  AttendToTalkRequest: api_days_vocab:AttendToTalkRequest
   CreateTalkRequest: api_days_vocab:CreateTalkRequest
   speaker: api_days_vocab:speaker
   name: schema:name
   startTime: schema:startTime
+  category: schema:category

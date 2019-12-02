@@ -5,8 +5,9 @@ class TalkService {
 
   constructor() {
     this.talks = [];
+    this.attendees = [];
 
-    this.createTalk({ name: 'First talk', speaker: 'Foo Bar', startTime: Date.now() });
+    this.createTalk({ name: 'First talk', speaker: 'Foo Bar', startTime: Date.now(), category: 'API Design' });
   }
  
   findByName(name) {
@@ -22,8 +23,8 @@ class TalkService {
     }
   }
 
-  delete(taskName) {
-    const talk = this.findByNameOrFail(taskName);
+  delete(talkName) {
+    const talk = this.findByNameOrFail(talkName);
     if (talk) {
       this.talks.splice(this.talks.indexOf(talk), 1);
     } else {
@@ -33,7 +34,7 @@ class TalkService {
 
   createTalk({ name, speaker, startTime }) {
     try {
-      this.findByNameOrFail(name)
+      this.findByNameOrFail(name);
       throw new Errors.BusinessRuleEnforced();
     } catch (error) {
       if (error instanceof Errors.NotFound) {
@@ -44,7 +45,11 @@ class TalkService {
         throw error
       }
     }
-    
+  }
+
+  addAttendee({ name, email }) {
+    this.findByNameOrFail(name);
+    this.attendees.push({name, email});
   }
 
 }

@@ -12,6 +12,7 @@ function talkWithHypermediaControls(talk) {
     .of(talk)
     .representation(t => t.talkRepresentation())
     .link(HypermediaControls.delete(talk))
+    .link(HypermediaControls.attend(talk))
     .build();
 }
 
@@ -21,11 +22,11 @@ const talkController = function(talkService) {
 
   router.get('/talks', (req, res) => res.status(200).json({ talks: talkService.talks }))
 
-  router.post('/talk', (req, res) =>
+  router.post('/talks', (req, res) =>
     Errors.handleErrorsGlobally(() => {
-      const { name, speaker, startTime } = req.body;
-      if (utils.isAnyEmpty([name, speaker, startTime])
-        || !validateBusinessConstraints(name, speaker, startTime)
+      const { name, speaker, startTime, category } = req.body;
+      if (utils.isAnyEmpty([name, speaker, startTime, category])
+        || !validateBusinessConstraints(name, speaker, startTime, category)
       ) {
         Responses.badRequest(res);
       } else {
@@ -35,7 +36,7 @@ const talkController = function(talkService) {
     }, res)
   )
 
-  router.delete('/talk/:name', (req, res) =>
+  router.delete('/talks/:name', (req, res) =>
     Errors.handleErrorsGlobally(() => {
       const name = req.params.name;
 
@@ -51,7 +52,19 @@ const talkController = function(talkService) {
       }
     }, res))
 
-  return router;
+  router.post('/talks/:name/attend', (req, res) => 
+    Errors.handleErrorsGlobally(() => {
+      const { email } = req.body;
+      if (utils.isAnyEmpty([email])) {
+        Responses.badRequest(res);
+      } else {
+        talkService.addAttendee(name, email);
+        Responses.noContent();
+      }
+    }, res)
+  )
+
+  return router
 
 }
 
