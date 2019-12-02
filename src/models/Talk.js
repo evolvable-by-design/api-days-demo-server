@@ -1,6 +1,6 @@
 class Talk {
-  constructor(name, speaker, startTime, category) {
-    this.name = name;
+  constructor(title, speaker, startTime, category) {
+    this.title = title;
     this.speaker = speaker;
     this.startTime = startTime;
     this.category = category;
@@ -8,7 +8,7 @@ class Talk {
 
   talkRepresentation() {
     return {
-      name: this.name,
+      title: this.title,
       speaker: this.speaker,
       startTime: this.startTime.toISOString(),
       category: this.category
@@ -19,8 +19,12 @@ class Talk {
 
 const TaskCategoryEnum = [ 'API Design', 'API Maintenance', 'API Management' ]
 
-const validateBusinessConstraints = (name, speaker, startTime, category) => {
-  if (!name || (name.length < 10 || name.length > 80)) {
+const validateBusinessConstraints = (title, speaker, startTime, category) => {
+  console.log('Title: ' + title)
+  console.log('Speaker: ' + speaker)
+  console.log('startTime: ' + startTime)
+  console.log('category: ' + category)
+  if (!title || (title.length < 10 || title.length > 40)) {
     return false
   } else if (speaker === undefined || speaker === null) {
     return false

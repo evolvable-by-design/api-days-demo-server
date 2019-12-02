@@ -7,15 +7,15 @@ class TalkService {
     this.talks = [];
     this.attendees = [];
 
-    this.createTalk({ name: 'First talk', speaker: 'Foo Bar', startTime: Date.now(), category: 'API Design' });
+    this.createTalk({ title: 'First talk', speaker: 'Foo Bar', startTime: Date.now(), category: 'API Design' });
   }
  
-  findByName(name) {
-    return this.talks.find(talk => talk.name === name);
+  findByTitle(title) {
+    return this.talks.find(talk => talk.title === title);
   }
 
-  findByNameOrFail(name) {
-    const talk = this.findByName(name)
+  findByTitleOrFail(title) {
+    const talk = this.findByTitle(title)
     if (talk) {
       return talk;
     } else {
@@ -23,8 +23,8 @@ class TalkService {
     }
   }
 
-  delete(talkName) {
-    const talk = this.findByNameOrFail(talkName);
+  delete(talkTitle) {
+    const talk = this.findByTitleOrFail(talkTitle);
     if (talk) {
       this.talks.splice(this.talks.indexOf(talk), 1);
     } else {
@@ -32,13 +32,13 @@ class TalkService {
     }
   }
 
-  createTalk({ name, speaker, startTime }) {
+  createTalk({ title, speaker, startTime }) {
     try {
-      this.findByNameOrFail(name);
+      this.findByTitleOrFail(title);
       throw new Errors.BusinessRuleEnforced();
     } catch (error) {
       if (error instanceof Errors.NotFound) {
-        const createdTalk = new Talk(name, speaker, new Date(startTime));
+        const createdTalk = new Talk(title, speaker, new Date(startTime));
         this.talks.push(createdTalk);
         return createdTalk;
       } else {
@@ -47,9 +47,9 @@ class TalkService {
     }
   }
 
-  addAttendee({ name, email }) {
-    this.findByNameOrFail(name);
-    this.attendees.push({name, email});
+  addAttendee(title, email) {
+    this.findByTitleOrFail(title);
+    this.attendees.push({title, email});
   }
 
 }
